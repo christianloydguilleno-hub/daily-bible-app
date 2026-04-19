@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#4A90E2">
+    <title>Daily Bible Reading</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo-area">
+                    <button id="menuToggle" class="menu-toggle">☰</button>
+                    <h1>📖 Daily Bible</h1>
+                </div>
+                <div class="header-stats">
+                    <div class="streak-counter">
+                        <span class="streak-icon">🔥</span>
+                        <span id="streakCount">0</span>
+                    </div>
+                    <button id="themeToggle" class="theme-toggle">🌙</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Side Navigation Drawer -->
+        <div id="sideDrawer" class="side-drawer">
+            <div class="drawer-header">
+                <h3>📚 Bible Books</h3>
+                <button id="closeDrawer" class="close-drawer">×</button>
+            </div>
+            <div class="drawer-search">
+                <input type="text" id="drawerSearch" placeholder="Search books...">
+            </div>
+            <div id="booksList" class="books-list"></div>
+        </div>
+        <div id="drawerOverlay" class="drawer-overlay"></div>
+
+        <!-- Main Navigation -->
+        <nav class="nav-tabs">
+            <button class="nav-btn active" data-tab="today">📅 Today</button>
+            <button class="nav-btn" data-tab="bible">📖 Read</button>
+            <button class="nav-btn" data-tab="notes">📝 Notes</button>
+            <button class="nav-btn" data-tab="progress">📊 Progress</button>
+            <button class="nav-btn" data-tab="plans">🎯 Plans</button>
+        </nav>
+
+        <!-- Today's Reading Tab -->
+        <div id="todayTab" class="tab-content active">
+            <div class="reading-card">
+                <div class="reading-header">
+                    <div class="date-badge" id="currentDate"></div>
+                    <h2 id="readingTitle">Loading...</h2>
+                </div>
+
+                <div class="verses-container">
+                    <div class="verses-reference" id="versesReference"></div>
+                    <div class="verses-content" id="versesContent">
+                        <div class="loading-spinner"></div>
+                    </div>
+                </div>
+
+                <div class="reading-actions">
+                    <button id="markCompleteBtn" class="btn-primary">✅ Mark as Read</button>
+                    <button id="audioBtn" class="btn-secondary">🔊 Listen</button>
+                </div>
+
+                <div class="completed-status" id="completedStatus" style="display: none;">
+                    <span class="checkmark">✓</span> Completed today's reading!
+                </div>
+            </div>
+        </div>
+
+        <!-- IMPROVED BIBLE READING TAB -->
+        <div id="bibleTab" class="tab-content">
+            <!-- Reading Controls Bar -->
+            <div class="reading-controls-bar">
+                <button id="openBookMenu" class="control-btn">
+                    <span>📖</span> Book
+                </button>
+                <div class="chapter-nav">
+                    <button id="prevChapterBtn" class="nav-btn-small" disabled>←</button>
+                    <button id="chapterMenuBtn" class="chapter-menu-btn">
+                        <span id="currentChapterDisplay">Chapter 1</span>
+                        <span class="dropdown-arrow">▼</span>
+                    </button>
+                    <button id="nextChapterBtn" class="nav-btn-small" disabled>→</button>
+                </div>
+                <button id="readingSettingsBtn" class="control-btn">
+                    <span>⚙️</span>
+                </button>
+            </div>
+
+            <!-- Reading Settings Panel -->
+            <div id="readingSettingsPanel" class="settings-panel" style="display: none;">
+                <div class="settings-group">
+                    <label>Font Size</label>
+                    <div class="font-controls">
+                        <button id="fontDecrease">A-</button>
+                        <span id="fontSizeDisplay">16px</span>
+                        <button id="fontIncrease">A+</button>
+                    </div>
+                </div>
+                <div class="settings-group">
+                    <label>Line Spacing</label>
+                    <div class="line-spacing-controls">
+                        <button id="spacingDecrease">Compact</button>
+                        <button id="spacingIncrease">Comfort</button>
+                    </div>
+                </div>
+                <div class="settings-group">
+                    <label>Reading Mode</label>
+                    <div class="mode-controls">
+                        <button id="verseModeBtn" class="mode-btn active">Verse by Verse</button>
+                        <button id="scrollModeBtn" class="mode-btn">Continuous Scroll</button>
+                    </div>
+                </div>
+                <div class="settings-group">
+                    <label>
+                        <input type="checkbox" id="showVerseNumbersToggle" checked> Show Verse Numbers
+                    </label>
+                </div>
+            </div>
+
+            <!-- Chapter Jump Menu (hidden initially) -->
+            <div id="chapterJumpMenu" class="chapter-jump-menu" style="display: none;">
+                <div class="jump-header">
+                    <h4>Go to Chapter</h4>
+                    <button id="closeJumpMenu">×</button>
+                </div>
+                <div id="chapterList" class="chapter-list"></div>
+            </div>
+
+            <!-- Bible Content Area -->
+            <div class="bible-reader-container">
+                <div id="bibleContent" class="bible-content">
+                    <div class="welcome-message">
+                        <div class="welcome-icon">📖</div>
+                        <h2>Open God's Word</h2>
+                        <p>Select a book and chapter to begin reading</p>
+                        <button id="quickStartBtn" class="btn-primary">Quick Start →</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reading Progress Footer -->
+            <div class="reading-footer" id="readingFooter" style="display: none;">
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="readingProgressBar"></div>
+                </div>
+                <div class="footer-actions">
+                    <button id="bookmarkCurrentBtn" class="footer-btn">⭐ Bookmark</button>
+                    <button id="shareVerseBtn" class="footer-btn">📤 Share</button>
+                    <button id="copyVerseBtn" class="footer-btn">📋 Copy</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notes Tab -->
+        <div id="notesTab" class="tab-content">
+            <div class="notes-container">
+                <div class="notes-header">
+                    <h2>My Reflections</h2>
+                    <button id="saveNoteBtn" class="btn-primary">💾 Save Note</button>
+                </div>
+
+                <div class="note-editor">
+                    <input type="text" id="noteTitle" placeholder="Note title..." class="note-title-input">
+                    <textarea id="noteContent" rows="8" placeholder="Write your reflections here..."></textarea>
+                    <div class="note-metadata">
+                        <span id="noteDate"></span>
+                        <span id="wordCount">0 words</span>
+                    </div>
+                </div>
+
+                <div class="previous-notes">
+                    <h3>Previous Notes</h3>
+                    <div id="notesList" class="notes-list"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Tab -->
+        <div id="progressTab" class="tab-content">
+            <div class="progress-container">
+                <div class="stats-card">
+                    <h3>Reading Statistics</h3>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-value" id="totalRead">0</div>
+                            <div class="stat-label">Days Read</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="completionRate">0%</div>
+                            <div class="stat-label">Completion Rate</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="totalVerses">0</div>
+                            <div class="stat-label">Verses Read</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="totalChapters">0</div>
+                            <div class="stat-label">Chapters Read</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="calendar-container">
+                    <h3>Reading Calendar</h3>
+                    <div class="calendar-header">
+                        <button id="prevMonth">←</button>
+                        <span id="currentMonthYear"></span>
+                        <button id="nextMonth">→</button>
+                    </div>
+                    <div class="calendar-grid" id="calendarGrid"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Plans Tab -->
+        <div id="plansTab" class="tab-content">
+            <div class="plans-container">
+                <h2>Reading Plans</h2>
+                <div class="plans-grid">
+                    <div class="plan-card" data-plan="30">
+                        <div class="plan-icon">📘</div>
+                        <h3>30-Day Journey</h3>
+                        <p>Complete the New Testament in 30 days</p>
+                        <button class="btn-plan" onclick="selectPlan(30)">Select Plan</button>
+                    </div>
+                    <div class="plan-card" data-plan="90">
+                        <div class="plan-icon">📚</div>
+                        <h3>90-Day Challenge</h3>
+                        <p>Read through the entire Bible</p>
+                        <button class="btn-plan" onclick="selectPlan(90)">Select Plan</button>
+                    </div>
+                    <div class="plan-card" data-plan="365">
+                        <div class="plan-icon">⭐</div>
+                        <h3>Yearly Reading</h3>
+                        <p>Daily readings for the whole year</p>
+                        <button class="btn-plan" onclick="selectPlan(365)">Select Plan</button>
+                    </div>
+                </div>
+                <div id="currentPlanInfo" class="current-plan"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Verse Action Toast -->
+    <div id="verseToast" class="verse-toast"></div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
